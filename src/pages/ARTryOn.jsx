@@ -1,8 +1,40 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Smartphone, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight } from 'lucide-react';
+import { Camera, Smartphone, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight, Video, VideoOff } from 'lucide-react';
 
 const ARTryOn = () => {
+  const videoRef = useRef(null);
+  const [streaming, setStreaming] = useState(false);
+  const [error, setError] = useState('');
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setStreaming(true);
+        setError('');
+      }
+    } catch (e) {
+      setError('Camera permission denied or not available.');
+    }
+  };
+
+  const stopCamera = () => {
+    const video = videoRef.current;
+    if (video && video.srcObject) {
+      const tracks = video.srcObject.getTracks();
+      tracks.forEach((t) => t.stop());
+      video.srcObject = null;
+    }
+    setStreaming(false);
+  };
+
+  useEffect(() => {
+    return () => stopCamera();
+  }, []);
+
   const features = [
     {
       icon: Camera,
@@ -342,6 +374,34 @@ const ARTryOn = () => {
             Start AR Experience
             <ArrowRight className="ml-2 w-5 h-5" />
           </motion.button>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Camera Controls */}
+            <div className="lg:col-span-1 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Camera Preview</h3>
+              <div className="flex gap-3">
+                <button onClick={startCamera} disabled={streaming} className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 inline-flex items-center gap-2">
+                  <Video className="w-4 h-4" /> Start
+                </button>
+                <button onClick={stopCamera} disabled={!streaming} className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 inline-flex items-center gap-2">
+                  <VideoOff className="w-4 h-4" /> Stop
+                </button>
+              </div>
+              {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
+            </div>
+
+            {/* Live Preview */}
+            <div className="lg:col-span-2">
+              <div className="aspect-video bg-black rounded-2xl overflow-hidden border border-gray-200">
+                <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Tip: Ensure good lighting and stand centered for best results.</p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

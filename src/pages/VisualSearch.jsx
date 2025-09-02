@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Camera, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight } from 'lucide-react';
+import { Search, Camera, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
 
 const VisualSearch = () => {
+  const [preview, setPreview] = useState(null);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+  };
+
+  const handleSearch = async () => {
+    if (!preview) return;
+    setLoading(true);
+    // Simulate search
+    setTimeout(() => {
+      setResults([
+        { id: 1, title: 'Silk Dress', price: '$129', img: 'https://images.unsplash.com/photo-1520975922139-6c7094844362?w=600&q=80' },
+        { id: 2, title: 'Casual Tee', price: '$29', img: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80' },
+        { id: 3, title: 'Denim Jacket', price: '$89', img: 'https://images.unsplash.com/photo-1520975693412-35ee4c1a4a6b?w=600&q=80' },
+        { id: 4, title: 'Classic Heels', price: '$79', img: 'https://images.unsplash.com/photo-1514986888952-8cd320577b68?w=600&q=80' },
+        { id: 5, title: 'Leather Bag', price: '$159', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80' },
+        { id: 6, title: 'Sunglasses', price: '$49', img: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=600&q=80' },
+      ]);
+      setLoading(false);
+    }, 1200);
+  };
+
   const features = [
     {
       icon: Search,
@@ -342,6 +370,75 @@ const VisualSearch = () => {
             Get Started
             <ArrowRight className="ml-2 w-5 h-5" />
           </motion.button>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Upload Card */}
+            <motion.div
+              className="lg:col-span-1 bg-gray-50 border border-gray-200 rounded-2xl p-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Upload an image</h3>
+              <label className="block border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400 transition-colors">
+                <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                <div className="flex flex-col items-center">
+                  <Upload className="w-8 h-8 text-indigo-500 mb-2" />
+                  <span className="text-gray-600">Click to upload or drag and drop</span>
+                  <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</span>
+                </div>
+              </label>
+
+              {preview && (
+                <div className="mt-4">
+                  <img src={preview} alt="preview" className="w-full h-48 object-cover rounded-lg" />
+                </div>
+              )}
+
+              <button
+                onClick={handleSearch}
+                disabled={!preview || loading}
+                className="w-full mt-4 px-4 py-3 bg-indigo-600 text-white rounded-lg disabled:opacity-50"
+              >
+                {loading ? 'Searching...' : 'Search Similar Styles'}
+              </button>
+            </motion.div>
+
+            {/* Results Grid */}
+            <motion.div
+              className="lg:col-span-2"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Results</h3>
+              {results.length === 0 ? (
+                <div className="h-64 flex flex-col items-center justify-center text-gray-500 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                  <ImageIcon className="w-8 h-8 mb-2" />
+                  <p>No results yet. Upload an image to begin.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {results.map((item) => (
+                    <div key={item.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                      <img src={item.img} alt={item.title} className="w-full h-36 object-cover" />
+                      <div className="p-3">
+                        <div className="text-sm font-medium text-gray-800">{item.title}</div>
+                        <div className="text-xs text-gray-500">{item.price}</div>
+                        <button className="mt-2 w-full text-xs px-3 py-2 bg-indigo-600 text-white rounded-md">View</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </div>
         </div>
       </section>
     </div>

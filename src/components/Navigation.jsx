@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Sparkles } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +64,7 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navigationItems.map((item, index) => (
               <motion.div
                 key={item.path}
@@ -92,6 +93,11 @@ const Navigation = () => {
                 </Link>
               </motion.div>
             ))}
+
+            {/* Clothing-style Theme Toggle */}
+            <div className="ml-2">
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -100,6 +106,7 @@ const Navigation = () => {
             onClick={() => setIsOpen(!isOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            aria-label="Toggle menu"
           >
             <AnimatePresence mode="wait">
               {isOpen ? (
@@ -158,6 +165,11 @@ const Navigation = () => {
                     </Link>
                   </motion.div>
                 ))}
+
+                {/* Mobile Theme Toggle */}
+                <div className="px-4 pt-2">
+                  <ThemeToggle />
+                </div>
               </div>
             </motion.div>
           )}

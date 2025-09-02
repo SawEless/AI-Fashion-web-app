@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, Headphones, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight } from 'lucide-react';
+import { Eye, Headphones, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight, RotateCcw } from 'lucide-react';
 
 const VRShowroom = () => {
+  const [room, setRoom] = useState('Main Hall');
+  const [autoRotate, setAutoRotate] = useState(true);
+
   const features = [
     {
       icon: Eye,
@@ -342,6 +345,57 @@ const VRShowroom = () => {
             Get Started
             <ArrowRight className="ml-2 w-5 h-5" />
           </motion.button>
+        </div>
+      </section>
+
+      {/* Interactive Placeholder */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Controls */}
+            <div className="lg:col-span-1 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Showroom Controls</h3>
+
+              <label className="block text-sm text-gray-700 mb-2">Room</label>
+              <select value={room} onChange={(e) => setRoom(e.target.value)} className="w-full border rounded-md px-3 py-2">
+                {['Main Hall', 'Runway', 'Accessories', 'Footwear'].map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-sm text-gray-700">Auto Rotate</span>
+                <button
+                  onClick={() => setAutoRotate((v) => !v)}
+                  className={`px-3 py-1 text-sm rounded-full ${autoRotate ? 'bg-violet-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                >
+                  {autoRotate ? 'On' : 'Off'}
+                </button>
+              </div>
+
+              <div className="mt-6 text-xs text-gray-500">
+                Room: <span className="font-medium text-gray-700">{room}</span>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="lg:col-span-2">
+              <div className="aspect-video bg-gradient-to-br from-violet-50 to-purple-50 border border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+                <motion.div
+                  className="w-48 h-64 rounded-xl bg-white shadow-xl border border-gray-200 flex items-center justify-center text-gray-700 text-sm"
+                  animate={autoRotate ? { rotateY: [0, 360] } : { rotateY: 0 }}
+                  transition={autoRotate ? { duration: 8, repeat: Infinity, ease: 'linear' } : {}}
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <div className="text-center p-4">
+                    <RotateCcw className="w-6 h-6 mx-auto mb-2 text-violet-600" />
+                    {room} Preview
+                  </div>
+                </motion.div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Placeholder 3D card. We can swap with real 3D later.</p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

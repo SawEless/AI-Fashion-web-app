@@ -1,8 +1,68 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, Users, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight } from 'lucide-react';
+import { Palette, Users, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight, Eraser, Download } from 'lucide-react';
 
 const CoDesign = () => {
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [color, setColor] = useState('#ef4444');
+  const [size, setSize] = useState(6);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+  }, []);
+
+  const getPos = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x, y };
+  };
+
+  const handleDown = (e) => {
+    setIsDrawing(true);
+    const { x, y } = getPos(e);
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const handleMove = (e) => {
+    if (!isDrawing) return;
+    const { x, y } = getPos(e);
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const handleUp = () => setIsDrawing(false);
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const exportPNG = () => {
+    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.download = 'design.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   const features = [
     {
       icon: Palette,
@@ -342,6 +402,49 @@ const CoDesign = () => {
             Get Started
             <ArrowRight className="ml-2 w-5 h-5" />
           </motion.button>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Tools */}
+            <div className="lg:col-span-1 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Design Tools</h3>
+              <label className="block text-sm text-gray-700 mb-2">Color</label>
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-full h-10 p-1 rounded-md border" />
+
+              <label className="block text-sm text-gray-700 mt-4 mb-2">Brush Size: {size}px</label>
+              <input type="range" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" />
+
+              <div className="flex gap-3 mt-6">
+                <button onClick={clearCanvas} className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg inline-flex items-center justify-center gap-2">
+                  <Eraser className="w-4 h-4" /> Clear
+                </button>
+                <button onClick={exportPNG} className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg inline-flex items-center justify-center gap-2">
+                  <Download className="w-4 h-4" /> Export
+                </button>
+              </div>
+            </div>
+
+            {/* Canvas */}
+            <div className="lg:col-span-3">
+              <div className="aspect-video bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <canvas
+                  ref={canvasRef}
+                  className="w-full h-full touch-none"
+                  onMouseDown={handleDown}
+                  onMouseMove={handleMove}
+                  onMouseUp={handleUp}
+                  onMouseLeave={handleUp}
+                  onTouchStart={handleDown}
+                  onTouchMove={handleMove}
+                  onTouchEnd={handleUp}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Tip: Use touch or mouse to draw. Export as PNG.</p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

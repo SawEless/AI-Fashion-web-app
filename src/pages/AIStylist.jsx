@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, MessageCircle, Sparkles, Zap, Star, Crown, TrendingUp, ArrowRight } from 'lucide-react';
+import AIChatInterface from '../components/AIChatInterface';
 
 const AIStylist = () => {
   const features = [
@@ -293,6 +294,25 @@ const AIStylist = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Chat Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-gray-800">Chat with your AI Stylist</h2>
+            <p className="text-gray-600 mt-2">Get instant outfit ideas, styling tips, and recommendations.</p>
+          </motion.div>
+          <div className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
+            <AIChatInterface />
+          </div>
         </div>
       </section>
 
